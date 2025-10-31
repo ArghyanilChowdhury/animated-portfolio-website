@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===============================
+   Orbit Dashed Rings Utilities
+   =============================== */
+@layer utilities {
+  .ring-dashed {
+    @apply rounded-full border-2 border-dashed;
+  }
+
+  .ring-teal {
+    border-color: rgb(45 212 191); /* Tailwind teal-400 */
+  }
+
+  .ring-emerald {
+    border-color: rgb(16 185 129); /* Tailwind emerald-500 */
+  }
+
+  /* ✅ Continuous reverse spin animation */
+  .animate-spin-reverse {
+    animation: spin-reverse 12s linear infinite;
+  }
+}
+
+/* ===============================
+   Keyframes for Reverse Spin
+   =============================== */
+@keyframes spin-reverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* ===============================
+   Typewriter Cursor for Summary
+   =============================== */
+.type-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 3px;
+  background: currentColor;
+  vertical-align: -2px;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ===============================
+   Prevent Ligatures (Typewriter Safety)
+   =============================== */
+.typewriter-safe {
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
+}
+/* 3D Transform Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.group-hover\:rotate-y-12:hover {
+  transform: rotateY(12deg);
+}
+.group-hover\:rotate-x-6:hover {
+  transform: rotateX(6deg);
+}
+/* Glowing animated vertical path */
+@keyframes glow-flow {
+  0% {
+    opacity: 0.5;
+    box-shadow: 0 0 10px rgba(20, 184, 166, 0.4);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.9);
+  }
+  100% {
+    opacity: 0.5;
+    box-shadow: 0 0 10px rgba(20, 184, 166, 0.4);
+  }
+}
+
+.glow-path {
+  animation: glow-flow 3s ease-in-out infinite;
+}
+.perspective-1000 {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease-in-out;
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
