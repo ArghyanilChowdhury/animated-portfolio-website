@@ -51,15 +51,24 @@ pipeline {
         }
 
         stage('Run Docker Container') {
-            steps {
-                echo "Running Docker container locally..."
-                // Stop and remove any previous container if it exists
-                bat 'docker stop animated-portfolio || true'
-                bat 'docker rm animated-portfolio || true'
-                // Run new container
-                bat 'docker run -d -p 8080:80 --name animated-portfolio animated-portfolio:v1.0'
-            }
-        }
+    steps {
+        echo "Running Docker container locally..."
+
+        // Stop and remove old container if it exists (Windows compatible)
+        bat '''
+        docker ps -a -q -f name=animated-portfolio > temp.txt
+        for /f %%i in (temp.txt) do (
+            docker stop animated-portfolio
+            docker rm animated-portfolio
+        )
+        del temp.txt
+        echo No existing container found or cleaned up successfully
+        '''
+
+        // Run new container
+        bat 'docker run -d -p 8080:80 --name animated-portfolio animated-portfolio:v1.0'
+    }
+}
 
 
         stage('Verify Running Container') {
