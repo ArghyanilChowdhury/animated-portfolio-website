@@ -8,13 +8,16 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install ALL dependencies including devDependencies
+# Ensure devDependencies are installed (important for Vite)
+ENV NODE_ENV=development
+
+# Install all dependencies (including devDependencies)
 RUN npm install
 
-# Copy all source code and build
+# Copy all source code
 COPY . .
 
-# Run the production build
+# Run build with Vite (use npx from node_modules)
 RUN npx vite build
 
 # ============================
@@ -22,7 +25,7 @@ RUN npx vite build
 # ============================
 FROM nginx:stable-alpine
 
-# Copy the build output from builder stage
+# Copy the build output from builder stage to Nginx directory
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expose port 80
