@@ -6,13 +6,18 @@ pipeline {
         git "DefaultGit"        // Optional if Git is globally available
     }
 
+    environment {
+        IMAGE_NAME = "animated-portfolio"      // local image name
+        IMAGE_TAG  = "v1.0"
+    }
+
     stages {
 
         stage('Checkout Code') {
             steps {
                 echo "Pulling code from GitHub repository..."
                 git branch: 'devops-docker-integration',
-                    credentialsId: 'github-credentials',  // ✅ Use the ID of the credentials you created in Jenkins
+                    credentialsId: 'github-credentials',
                     url: 'https://github.com/ArghyanilChowdhury/Animated-Portfolio-Website.git'
             }
         }
@@ -38,11 +43,36 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                echo "Building Docker image..."
+                bat "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                echo "Running Docker container locally..."
+                // Stop previous container if running
+                bat "docker stop ${IMAGE_NAME} || echo No container to stop"
+                bat "docker rm ${IMAGE_NAME} || echo No container to remove"
+                // Run container in detached mode
+                bat "docker run -d -p 8080:80 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}"
+            }
+        }
+
+        stage('Verify Running Container') {
+            steps {
+                echo "Listing running containers..."
+                bat 'docker ps'
+            }
+        }
+
         stage('Serve Build Locally (Optional)') {
             steps {
                 echo "Starting local HTTP server to test the build output..."
                 // Optional: Uncomment below if you have `serve` installed globally
-                // bat 'npx serve -s build -l 3000'
+                // bat 'npx serve -s dist -l 3000'
             }
         }
     }
