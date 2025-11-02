@@ -78,6 +78,21 @@ pipeline {
             }
         }
 
+        stage('Push to Docker Hub') {
+    steps {
+        echo "Pushing Docker image to Docker Hub..."
+
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            bat """
+            docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+            docker tag animated-portfolio:v1.0 %DOCKER_USER%/animated-portfolio:v1.0
+            docker push %DOCKER_USER%/animated-portfolio:v1.0
+            """
+        }
+    }
+}
+
+
         stage('Serve Build Locally (Optional)') {
             steps {
                 echo "Starting local HTTP server to test the build output..."
