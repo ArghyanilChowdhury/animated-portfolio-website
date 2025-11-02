@@ -1,28 +1,32 @@
 # ============================
-# Stage 1: Build the React app
+# 1️⃣ BUILD STAGE
 # ============================
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files
 COPY package*.json ./
+
+# Install ALL dependencies including devDependencies
 RUN npm install
 
 # Copy all source code and build
 COPY . .
-RUN npm run build
+
+# Run the production build
+RUN npx vite build
 
 # ============================
-# Stage 2: Serve the built app with Nginx
+# 2️⃣ RUN STAGE
 # ============================
 FROM nginx:stable-alpine
 
-# Copy build output from previous stage
+# Copy the build output from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port 80 for access
+# Expose port 80
 EXPOSE 80
 
-# Default command
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
