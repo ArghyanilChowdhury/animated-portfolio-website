@@ -34,7 +34,7 @@ pipeline {
         stage('Archive Build Artifacts') {
             steps {
                 echo "Archiving the build folder for later stages..."
-                archiveArtifacts artifacts: 'build/**', fingerprint: true
+                archiveArtifacts artifacts: 'dist/**', fingerprint: true
             }
         }
 
