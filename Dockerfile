@@ -8,28 +8,30 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Ensure devDependencies are installed (important for Vite)
+# Make sure all dependencies are installed, including devDependencies
 ENV NODE_ENV=development
 
-# Install all dependencies (including devDependencies)
 RUN npm install
 
-# Copy all source code
+# Copy all project files
 COPY . .
 
-# Run build with Vite (use npx from node_modules)
-RUN npx vite build
+# Add local binaries (like vite) to PATH explicitly
+ENV PATH="./node_modules/.bin:$PATH"
+
+# Run build using Vite (now it will be found)
+RUN vite build
 
 # ============================
 # 2️⃣ RUN STAGE
 # ============================
 FROM nginx:stable-alpine
 
-# Copy the build output from builder stage to Nginx directory
+# Copy build output from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
 
-# Start Nginx
+# Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
