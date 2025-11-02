@@ -53,13 +53,14 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 echo "Running Docker container locally..."
-                // Stop previous container if running
-                bat "docker stop ${IMAGE_NAME} || echo No container to stop"
-                bat "docker rm ${IMAGE_NAME} || echo No container to remove"
-                // Run container in detached mode
-                bat "docker run -d -p 8080:80 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}"
+                // Stop and remove any previous container if it exists
+                bat 'docker stop animated-portfolio || true'
+                bat 'docker rm animated-portfolio || true'
+                // Run new container
+                bat 'docker run -d -p 8080:80 --name animated-portfolio animated-portfolio:v1.0'
             }
         }
+
 
         stage('Verify Running Container') {
             steps {
