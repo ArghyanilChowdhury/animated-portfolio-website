@@ -5,19 +5,22 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy dependency files
+# Copy dependency files first
 COPY package*.json ./
 
-# Explicitly install ALL dependencies (including devDependencies)
+# Ensure devDependencies (like Vite) are installed
 RUN npm install --include=dev
+
+# Add local binaries (like vite) to PATH
+ENV PATH=/app/node_modules/.bin:$PATH
 
 # Copy rest of the source code
 COPY . .
 
-# Add local binaries to PATH for Vite
-ENV PATH=/app/node_modules/.bin:$PATH
+# Verify vite exists before building (for debugging)
+RUN echo "Vite location:" && which vite && vite --version
 
-# Run build using Vite
+# Build the app
 RUN npm run build
 
 # ============================
