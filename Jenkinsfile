@@ -54,7 +54,6 @@ pipeline {
     steps {
         echo "Running Docker container locally..."
 
-        // Stop and remove old container if it exists (Windows compatible)
         bat '''
         docker ps -a -q -f name=animated-portfolio > temp.txt
         for /f %%i in (temp.txt) do (
@@ -65,10 +64,11 @@ pipeline {
         echo No existing container found or cleaned up successfully
         '''
 
-        // Run new container
-        bat 'docker run -d -p 8080:80 --name animated-portfolio animated-portfolio:v1.0'
+        // Use different host port to avoid conflicts
+        bat 'docker run -d -p 8081:80 --name animated-portfolio animated-portfolio:v1.0'
     }
 }
+
 
 
         stage('Verify Running Container') {
