@@ -5,33 +5,31 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy dependency files
 COPY package*.json ./
 
-# Make sure all dependencies are installed, including devDependencies
-ENV NODE_ENV=development
+# Explicitly install ALL dependencies (including devDependencies)
+RUN npm install --include=dev
 
-RUN npm install
-
-# Copy all project files
+# Copy rest of the source code
 COPY . .
 
-# Add local binaries (like vite) to PATH explicitly
-ENV PATH="./node_modules/.bin:$PATH"
+# Add local binaries to PATH for Vite
+ENV PATH=/app/node_modules/.bin:$PATH
 
-# Run build using Vite (now it will be found)
-RUN vite build
+# Run build using Vite
+RUN npm run build
 
 # ============================
 # 2️⃣ RUN STAGE
 # ============================
 FROM nginx:stable-alpine
 
-# Copy build output from builder stage
+# Copy the built app from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
 
-# Start Nginx server
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
